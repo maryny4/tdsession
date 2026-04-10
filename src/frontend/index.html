@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tdsession</title>
+<link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <button class="tb" id="btn-sidebar" onclick="toggleSidebar()" title="Toggle sidebar"><i class="icon-panel-left"></i></button>
+  <div class="logo">
+    <div class="logo-mark">td</div>
+    <h1>tdsession</h1>
+  </div>
+  <span class="chip idle" id="chip">idle</span>
+  <span class="spacer"></span>
+  <button class="tb danger" id="btn-stop-all" disabled onclick="doStopAll()" title="Stop all"><i class="icon-square"></i></button>
+</div>
+
+<div class="layout">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-label">Sessions</div>
+    <div class="tree-wrap" id="tree"></div>
+    <div class="sidebar-bottom">
+      <button class="btn-launch" id="btn-launch" disabled onclick="doLaunch()">
+        <i class="icon-play" style="font-size:14px"></i><span id="btn-launch-text">Launch</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="tabs" id="tabs-bar"></div>
+    <div class="vnc-wrap" id="vnc-wrap">
+      <div class="vnc-toolbar" id="vnc-toolbar">
+        <button class="tb" id="btn-ctrlbar" onclick="toggleControlBar()" title="VNC controls"><i class="icon-sliders-horizontal"></i></button>
+        <button class="tb" onclick="toggleFullscreen()" title="Fullscreen"><i class="icon-maximize-2"></i></button>
+      </div>
+      <div class="placeholder" id="placeholder">
+        <div class="ph-icon"><i class="icon-monitor"></i></div>
+        <p>Select a session and click Launch</p>
+        <span class="ph-hint">Sessions appear in the sidebar</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

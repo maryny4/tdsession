@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+data/
+*.session
+!sessions/.gitkeep
+.DS_Store
+.idea/
+.venv/
+.pytest_cache/

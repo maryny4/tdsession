@@ -1,0 +1,16 @@
+services:
+  tdsession:
+    build: ./src
+    platform: linux/amd64
+    ports:
+      - "${WEB_PORT:-6160}:6160"
+    volumes:
+      - ./sessions:/app/sessions
+      - ./shared:/app/shared
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      WEB_PORT: "${WEB_PORT:-6160}"
+      MAX_SESSIONS: "${MAX_SESSIONS:-10}"
+      VNC_RESOLUTION: "${VNC_RESOLUTION:-1920x1080}"
