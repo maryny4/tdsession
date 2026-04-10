@@ -76,7 +76,7 @@ MAX_SESSIONS=10            # Max concurrent sessions
 VNC_RESOLUTION=1920x1080   # Initial VNC resolution
 ```
 
-~170 MB RAM per session. To persist cache across rebuilds, add `- ./data:/app/data` to volumes.
+To persist cache across rebuilds, add `- ./data:/app/data` to volumes.
 
 ## Architecture
 
