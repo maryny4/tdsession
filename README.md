@@ -1,158 +1,111 @@
 <div align="center">
+<br>
 
 # tdsession
 
-**Multi-session Telegram Desktop viewer in Docker**
+Multi-session Telegram Desktop viewer in Docker
 
-Launch and manage multiple Telegram accounts simultaneously through your browser.
+Launch and manage multiple Telegram accounts simultaneously through your browser.<br>
 Supports Telethon, Pyrogram, and Kurigram session formats with automatic detection.
+
+<br>
 
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](#quick-start)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-linux%2Famd64-lightgrey)](#requirements)
 
-<img src="demo.gif" alt="tdsession demo" width="720">
+<br>
 
-</div>
-
----
-
-## What it does
-
-Drop your `.session` files into a folder, run one command, and get a web UI where you can:
-
-- **View multiple accounts** — each runs in its own isolated VNC display
-- **Switch instantly** — tab-based interface, all sessions stay alive
-- **Auto-detect formats** — Telethon, Pyrogram, Kurigram recognized automatically
-- **Share files** — built-in shared folder accessible from VNC file dialogs
-- **Copy-paste** — seamless clipboard between host and VNC (Chrome/Edge)
+<img src="demo.gif" alt="demo" width="680">
 
 <br>
+</div>
+
+## Features
+
+- **Multi-account** — up to 10 simultaneous Telegram Desktop sessions with tab switching
+- **Auto-detect** — Telethon, Pyrogram, Kurigram `.session` formats recognized automatically
+- **Live updates** — new session files appear instantly via filesystem watcher
+- **Shared folder** — exchange files between host and VNC sessions
+- **Clipboard** — seamless copy/paste between host and VNC (Chrome/Edge)
+- **Fullscreen** — hide sidebar and tabs for a clean view
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/hex4f/tdsession.git
+git clone https://github.com/maryny4/tdsession.git
 cd tdsession
-
-# Configure
 cp .env.example .env
-
-# Run
 docker compose up -d
-
-# Open
-open http://localhost:6160
 ```
 
-> Place your `.session` files into the `sessions/` folder (subfolders supported). They appear in the UI instantly.
-
-<br>
+Open **http://localhost:6160** and drop your `.session` files into `sessions/`.
 
 ## Project Structure
 
 ```
 tdsession/
-├── docker-compose.yml      # Run configuration
-├── .env                     # Optional: WEB_PORT, MAX_SESSIONS, VNC_RESOLUTION
-├── sessions/                # Your .session files (subfolders supported)
-├── shared/                  # File exchange with VNC sessions
-└── src/                     # Application source
-    ├── backend/             # FastAPI server
-    ├── frontend/            # Web UI
-    ├── Dockerfile
-    └── entrypoint.sh
+├── docker-compose.yml     # Run configuration
+├── .env                   # WEB_PORT, MAX_SESSIONS, VNC_RESOLUTION
+├── sessions/              # Your .session files (subfolders supported)
+├── shared/                # File exchange with VNC sessions
+└── src/                   # Application source
 ```
-
-<br>
 
 ## Usage
 
 | Action | How |
 |--------|-----|
-| **Add sessions** | Drop `.session` files into `sessions/` — they appear in the sidebar instantly |
-| **Launch** | Select a session, click **Launch** |
-| **Switch** | Click tabs to switch between running sessions |
-| **Fullscreen** | Hover VNC area → click maximize icon (top right) |
-| **Toggle sidebar** | Click panel icon in the top bar |
-| **VNC toolbar** | Hover VNC area → sliders icon toggles KasmVNC control bar |
-| **Share files** | Put files in `shared/` → accessible as "Shared" bookmark in VNC file dialogs |
-| **Stop** | Click ✕ on a tab, or **Stop All** in the top bar |
-
-<br>
+| **Add sessions** | Drop `.session` files into `sessions/` — they appear instantly |
+| **Launch** | Select a session → click **Launch** |
+| **Switch** | Click tabs to switch between sessions |
+| **Fullscreen** | Hover VNC area → maximize icon (top right) |
+| **Sidebar** | Toggle via panel icon in the top bar |
+| **Share files** | `shared/` folder → "Shared" bookmark in VNC file dialogs |
+| **Stop** | ✕ on a tab, or **Stop All** |
 
 ## Clipboard
 
 | Browser | Method |
 |---------|--------|
-| **Chrome / Edge** | Seamless — copy/paste works automatically between host and VNC. Click once inside VNC canvas after switching tabs. |
-| **Safari / Firefox** | Use KasmVNC clipboard panel — toggle via sliders icon in VNC toolbar |
-
-<br>
+| Chrome / Edge | Seamless — works automatically. Click canvas once after tab switch. |
+| Safari / Firefox | Use KasmVNC clipboard panel (sliders icon in VNC toolbar) |
 
 ## Session Formats
 
 | Format | Detection | First Launch |
 |--------|-----------|-------------|
-| **Pyrogram** | `test_mode` + `user_id` columns | Offline |
-| **Kurigram** | `server_address` + `api_id` columns | Offline |
-| **Telethon** | `server_address` only | Needs internet (fetches `user_id` once) |
+| Pyrogram | `test_mode` + `user_id` | Offline |
+| Kurigram | `server_address` + `api_id` | Offline |
+| Telethon | `server_address` only | Needs internet once |
 
-Converted tdata is cached inside the container. Cache invalidates when the source `.session` file changes.
-
-<br>
+Converted tdata is cached. Cache invalidates when the source file changes.
 
 ## Configuration
 
-All settings are optional. Create `.env` in the project root:
-
 ```env
-WEB_PORT=6160              # Web UI port (default: 6160)
-MAX_SESSIONS=10            # Max concurrent sessions (default: 10)
-VNC_RESOLUTION=1920x1080   # Initial VNC resolution (default: 1920x1080)
+WEB_PORT=6160              # Web UI port
+MAX_SESSIONS=10            # Max concurrent sessions
+VNC_RESOLUTION=1920x1080   # Initial VNC resolution
 ```
 
-Each session uses approximately **170 MB RAM** (Xvnc + Fluxbox + Telegram Desktop).
-
-To persist tdata cache across container rebuilds:
-
-```yaml
-# docker-compose.yml
-volumes:
-  - ./data:/app/data
-```
-
-<br>
+~170 MB RAM per session. Persist cache: add `- ./data:/app/data` to volumes.
 
 ## Architecture
 
-Each session runs in complete isolation:
-
 ```
 Browser → FastAPI :6160
-            ├── /api/*             → Session Manager
-            ├── /vnc/{id}/*        → HTTP proxy  → Xvnc :100+N
-            └── /vnc/{id}/ws       → WS proxy   → Xvnc :100+N
-
-Per session:
-  Xvnc (display + VNC server)
-  Fluxbox (window manager)
-  Telegram Desktop (with converted tdata)
+            ├── /api/*          → Session Manager
+            ├── /vnc/{id}/*     → HTTP proxy → Xvnc :100+N
+            └── /vnc/{id}/ws    → WS proxy  → Xvnc :100+N
 ```
 
-- Sessions are allocated X displays `:100` through `:100+N` with corresponding VNC ports
-- KasmVNC web client provides browser-based remote desktop
-- FastAPI reverse-proxies all VNC traffic per session
-- Filesystem watcher pushes real-time updates via Server-Sent Events
-
-<br>
+Each session: **Xvnc** (display + VNC) → **Fluxbox** (WM) → **Telegram Desktop** (tdata)
 
 ## Requirements
 
-- **Docker** + **Docker Compose**
-- **x86_64** host recommended — ARM (Apple Silicon) works via QEMU emulation but is slower
-
-<br>
+- Docker + Docker Compose
+- x86_64 recommended (ARM works via emulation)
 
 ## License
 
