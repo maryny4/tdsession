@@ -11,6 +11,8 @@ Supports Telethon, Pyrogram, and Kurigram session formats with automatic detecti
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-linux%2Famd64-lightgrey)](#requirements)
 
+<img src="demo.gif" alt="tdsession demo" width="720">
+
 </div>
 
 ---
