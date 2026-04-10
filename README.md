@@ -1,25 +1,12 @@
-<div align="center">
-<br>
-
 # tdsession
 
-Multi-session Telegram Desktop viewer in Docker
-
-Launch and manage multiple Telegram accounts simultaneously through your browser.<br>
-Supports Telethon, Pyrogram, and Kurigram session formats with automatic detection.
-
-<br>
+> Multi-session Telegram Desktop viewer — launch and manage multiple Telegram accounts simultaneously through your browser via Docker. Supports Telethon, Pyrogram, and Kurigram session formats.
 
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](#quick-start)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-linux%2Famd64-lightgrey)](#requirements)
 
-<br>
-
-<img src="demo.gif" alt="demo" width="680">
-
-<br>
-</div>
+![demo](demo.gif)
 
 ## Features
 
@@ -79,7 +66,7 @@ tdsession/
 | Kurigram | `server_address` + `api_id` | Offline |
 | Telethon | `server_address` only | Needs internet once |
 
-Converted tdata is cached. Cache invalidates when the source file changes.
+Converted tdata is cached inside the container. Cache invalidates when the source file changes.
 
 ## Configuration
 
@@ -89,7 +76,7 @@ MAX_SESSIONS=10            # Max concurrent sessions
 VNC_RESOLUTION=1920x1080   # Initial VNC resolution
 ```
 
-~170 MB RAM per session. Persist cache: add `- ./data:/app/data` to volumes.
+~170 MB RAM per session. To persist cache across rebuilds, add `- ./data:/app/data` to volumes.
 
 ## Architecture
 
